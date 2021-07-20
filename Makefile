@@ -11,7 +11,7 @@ test:
 	poetry run python -m pytest tests
 
 linter:
-	poetry run pre-commit run --all
+	poetry run flake8 gendiff
 
 package-install:
 	python3 -m pip install --user dist/*.whl
