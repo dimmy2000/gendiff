@@ -7,11 +7,14 @@ build:
 publish:
 	poetry publish --dry-run
 
-test:
-	poetry run python -m pytest tests
+pytest:
+	poetry run python -m pytest
 
-linter:
+lint:
 	poetry run flake8 gendiff
 
 package-install:
-	python3 -m pip install --user dist/*.whl
+	pip install dist/*.whl
+
+package-uninstall:
+	pip uninstall hexlet-code
