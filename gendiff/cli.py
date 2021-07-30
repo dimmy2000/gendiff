@@ -31,7 +31,7 @@ def jsonify(input_data):
     return json.dumps(input_data)
 
 
-def read_data(file_path):
+def read_data(file_path: str) -> dict:
     """Read data from file.
 
     Parameters:
@@ -54,45 +54,37 @@ def read_data(file_path):
     return output
 
 
-def collect_diffs(first_dict, second_dict, keys):
-    """Collect differences between two given dictionaries into a list."""
-    diff = []
-    diff_list = []
+def normalize_diff(diff_dict, key, operation):
+    """Convert the diff to a required format string."""
     row = "  {0} {1}: {2}"
+    return row.format(operations[operation], key, jsonify(diff_dict[key]))
+
+
+def check_diff(key, first_dict, second_dict):
+    """Check the difference between two dicts."""
+    if key not in first_dict:
+        diff = normalize_diff(second_dict, key, "added")
+    elif key not in second_dict:
+        diff = normalize_diff(first_dict, key, "deleted")
+    elif first_dict[key] == second_dict[key]:
+        diff = normalize_diff(second_dict, key, "unchanged")
+    else:
+        diff = "{0}\n{1}".format(
+            normalize_diff(first_dict, key, "deleted"),
+            normalize_diff(second_dict, key, "added"),
+        )
+
+    return diff
+
+
+def collect_diffs(first_dict, second_dict):
+    """Collect differences between two dicts into a list."""
+    keys = sorted(first_dict.keys() | second_dict.keys())
+    diff_list = ["{", "}"]
 
     for key in keys:
-        if key not in first_dict:
-            diff = [
-                row.format(
-                    operations["added"], key, jsonify(second_dict[key]),
-                ),
-            ]
-        elif key not in second_dict:
-            diff = [
-                row.format(
-                    operations["deleted"], key, jsonify(first_dict[key]),
-                ),
-            ]
-        elif first_dict[key] == second_dict[key]:
-            diff = [
-                row.format(
-                    operations["unchanged"], key, jsonify(second_dict[key]),
-                ),
-            ]
-        else:
-            diff = [
-                row.format(
-                    operations["deleted"], key, jsonify(first_dict[key]),
-                ),
-                row.format(
-                    operations["added"], key, jsonify(second_dict[key]),
-                ),
-            ]
-        diff_list.extend(diff)
-
-    diff_list.insert(0, "{")
-    diff_list.append("}")
-
+        diff = check_diff(key, first_dict, second_dict)
+        diff_list.insert(-1, diff)
     return diff_list
 
 
@@ -104,12 +96,11 @@ def generate_diff(first_file, second_file):
         second_file: filepath to the second file
 
     Returns:
-          Difference between given files.
+          Difference between two files as a string.
     """
     data1 = read_data(first_file)
     data2 = read_data(second_file)
-    keys = sorted(data1.keys() | data2.keys())
 
-    output = collect_diffs(data1, data2, keys)
+    output = collect_diffs(data1, data2)
 
     return "\n".join(output)
