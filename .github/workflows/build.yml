@@ -1,13 +1,15 @@
-name: linter
+name: build
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
   pull_request:
-    branches:
-      - main
+    paths-ignore:
+      - '**.md'
 jobs:
-  linter:
+  build:
     strategy:
       matrix:
         python-version: [3.9]
@@ -29,3 +31,11 @@ jobs:
 
     - name: Run linter
       run: make lint
+
+    - name: Run tests
+      run: make pytest
+
+    - name: Publish code coverage
+      uses: paambaati/codeclimate-action@v2.7.2
+      env:
+        CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
