@@ -3,28 +3,20 @@ import os
 import subprocess
 import shlex
 
-EXPECTED_JSON = """{
-  - follow: false
-    host: "hexlet.io"
-  - proxy: "123.234.53.22"
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
-}"""
+git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
+repo_root = git_repo.git.rev_parse("--show-toplevel")
+fixtures_path = os.path.join(repo_root, "tests/fixtures/")
 
-EXPECTED_HELP = b"""usage: gendiff [-h] [-f FORMAT] first_file second_file
+test_files = [
+    ["flat1.json", "flat2.json"],
+    ["flat1.yaml", "flat2.yaml"],
+]
 
-Generate diff
+with open(os.path.join(fixtures_path, "expected.txt")) as f:
+    EXPECTED = f.read()
 
-positional arguments:
-  first_file
-  second_file
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -f FORMAT, --format FORMAT
-                        set format of output
-"""
+with open(os.path.join(fixtures_path, "expected_help.txt"), "rb") as f:
+    EXPECTED_HELP = f.read()
 
 
 def test_set_arg_parser():
@@ -33,14 +25,10 @@ def test_set_arg_parser():
 
 
 def test_gendiff():
-    git_repo = git.Repo(os.getcwd(), search_parent_directories=True)
-    git_root = git_repo.git.rev_parse("--show-toplevel")
+    for file in test_files:
+        file1 = os.path.join(fixtures_path, file[0])
+        file2 = os.path.join(fixtures_path, file[1])
 
-    file1 = os.path.join(git_root, "tests/fixtures/flat1.json")
-    file2 = os.path.join(git_root, "tests/fixtures/flat2.json")
-
-    input_request = shlex.split("poetry run gendiff {0} {1}".format(file1, file2))
-
-    output = subprocess.run(input_request, capture_output=True)
-
-    assert output.stdout.decode("utf-8") == EXPECTED_JSON
+        input_request = shlex.split("poetry run gendiff {0} {1}".format(file1, file2))
+        output = subprocess.run(input_request, capture_output=True)
+        assert output.stdout.decode("utf-8") == EXPECTED
