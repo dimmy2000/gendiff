@@ -31,4 +31,4 @@ def test_gendiff():
 
         input_request = shlex.split("poetry run gendiff {0} {1}".format(file1, file2))
         output = subprocess.run(input_request, capture_output=True)
-        assert output.stdout.decode("utf-8") == EXPECTED
+        assert output.stdout.decode("utf-8") + "\n" == EXPECTED
