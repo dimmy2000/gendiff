@@ -1,8 +1,8 @@
 """Command line interface methods."""
 import argparse
 import json
-import os
-import sys
+
+from gendiff.parsing import read_data
 
 operations = {
     "added": "+",
@@ -29,29 +29,6 @@ def set_arg_parser():
 def jsonify(input_data):
     """Return json object of input data."""
     return json.dumps(input_data)
-
-
-def read_data(file_path: str) -> dict:
-    """Read data from file.
-
-    Parameters:
-        file_path: absolute or relative path to the file
-
-    Returns:
-        Dictionary object with file contents.
-    """
-    abs_path = os.path.abspath(file_path)
-
-    try:
-        with open(abs_path, "r") as input_data:
-            output = json.load(input_data)
-    except FileNotFoundError:
-        sys.exit(
-            "File '{0}' does not exist. Program execution stopped.".format(
-                file_path,
-            ),
-        )
-    return output
 
 
 def normalize_diff(diff_dict, key, operation):

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.1.2"
-description = ""
+version = "0.1.3"
+description = "Gendiff is a program that determines the difference between two data structures."
 authors = [
   "Dmitry Samoylenko <dimsamoylenko@gmail.com>"
 ]
