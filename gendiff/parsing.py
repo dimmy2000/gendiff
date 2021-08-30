@@ -2,14 +2,17 @@
 import json
 import os
 import sys
+from types import MappingProxyType
 
 import yaml
 
-SUPPORTED_EXTENSIONS = {
-    ".json": json.load,
-    ".yaml": yaml.safe_load,
-    ".yml": yaml.safe_load,
-}
+SUPPORTED_EXTENSIONS = MappingProxyType(
+    {
+        ".json": json.load,
+        ".yaml": yaml.safe_load,
+        ".yml": yaml.safe_load,
+    },
+)
 
 
 def get_extension(file_path: str) -> str:
@@ -23,11 +26,11 @@ def get_extension(file_path: str) -> str:
     """
     _, file_extension = os.path.splitext(file_path)
     file_extension = file_extension.lower()
-    
+
     for extension in SUPPORTED_EXTENSIONS:
         if file_extension == extension:
             return file_extension
-    
+
     sys.exit(
         "Program does not support given file format. "
         "Use JSON or YAML files instead.",
