@@ -9,4 +9,4 @@ positional arguments:
 optional arguments:
   -h, --help            show this help message and exit
   -f FORMAT, --format FORMAT
-                        set format of output
+                        set format of output from stylish, plain or json

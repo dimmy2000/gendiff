@@ -19,7 +19,7 @@ def get_extension(file_path: str) -> str:
     """Check extension for given file.
 
     Parameters:
-        file_path: absolute or relative path to the file
+        file_path: absolute path to the file
 
     Returns:
         File extension.
