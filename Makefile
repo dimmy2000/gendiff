@@ -17,4 +17,4 @@ package-install:
 	pip install dist/*.whl
 
 package-uninstall:
-	pip uninstall hexlet-code
+	pip uninstall hexlet-code -y
