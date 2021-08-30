@@ -5,14 +5,14 @@ import sys
 
 import yaml
 
-formats = {
+SUPPORTED_EXTENSIONS = {
     ".json": json.load,
     ".yaml": yaml.safe_load,
     ".yml": yaml.safe_load,
 }
 
 
-def check_extension(file_path: str) -> str:
+def get_extension(file_path: str) -> str:
     """Check extension for given file.
 
     Parameters:
@@ -21,9 +21,13 @@ def check_extension(file_path: str) -> str:
     Returns:
         File extension.
     """
-    for file_type in formats:
-        if file_path.endswith(file_type):
-            return file_type
+    _, file_extension = os.path.splitext(file_path)
+    file_extension = file_extension.lower()
+    
+    for extension in SUPPORTED_EXTENSIONS:
+        if file_extension == extension:
+            return file_extension
+    
     sys.exit(
         "Program does not support given file format. "
         "Use JSON or YAML files instead.",
@@ -43,7 +47,7 @@ def read_data(file_path: str) -> dict:
 
     try:
         with open(abs_path, "r") as input_data:
-            output = formats[check_extension(abs_path)](input_data)
+            output = SUPPORTED_EXTENSIONS[get_extension(abs_path)](input_data)
     except FileNotFoundError:
         sys.exit(
             "File '{0}' does not exist. Program execution stopped.".format(
