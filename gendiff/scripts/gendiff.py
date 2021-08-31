@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Main logic of application."""
+"""CLI app main logic."""
 from gendiff import generate_diff
-from gendiff import set_arg_parser
+from gendiff.cli import set_arg_parser
 
 
 def main():

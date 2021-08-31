@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hexlet-code"
-version = "0.1.3"
+version = "0.1.4"
 description = "Gendiff is a program that determines the difference between two data structures."
 authors = [
   "Dmitry Samoylenko <dimsamoylenko@gmail.com>"
@@ -10,7 +10,7 @@ packages = [
 ]
 
 [tool.poetry.scripts]
-gendiff = "gendiff.scripts.gen_diff:main"
+gendiff = "gendiff.scripts.gendiff:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
