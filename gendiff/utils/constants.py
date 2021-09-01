@@ -1,5 +1,6 @@
 """Constants used by app utilities."""
 import json
+from collections import OrderedDict
 from types import MappingProxyType
 
 import yaml
@@ -14,11 +15,14 @@ SUPPORTED_EXTENSIONS = MappingProxyType(
 )
 
 STATUSES = MappingProxyType(
-    {
-        "added": "+",
-        "deleted": "-",
-        "unchanged": " ",
-    },
+    OrderedDict(
+        {
+            "added": "+",
+            "deleted": "-",
+            "unchanged": " ",
+            "updated": " ",
+        },
+    ),
 )
 
 FORMATS = (

@@ -1,62 +1,78 @@
 """Difference generator methods."""
-import json
+from collections.abc import Mapping
 
 from gendiff.utils.constants import STATUSES
 from gendiff.utils.loader import read_data
 
-
-def jsonify(input_data):
-    """Return json object of input data."""
-    return json.dumps(input_data)
+STATUS = "status"
+STATUSES = list(STATUSES.keys())
 
 
-def normalize_diff(diff_dict, key, operation):
-    """Convert the diff to a required format string."""
-    row = "  {0} {1}: {2}"
-    return row.format(STATUSES[operation], key, jsonify(diff_dict[key]))
+def validate_dict(status, old_value, new_value=None):
+    """Return a dictionary of a specific format."""
+    if new_value is None:
+        return {STATUS: status, "value": old_value}
+    return {STATUS: status, "value": old_value, "updated_value": new_value}
 
 
-def check_diff(key, first_dict, second_dict):
-    """Check the difference between two dicts."""
-    if key not in first_dict:
-        diff = normalize_diff(second_dict, key, "added")
-    elif key not in second_dict:
-        diff = normalize_diff(first_dict, key, "deleted")
-    elif first_dict[key] == second_dict[key]:
-        diff = normalize_diff(second_dict, key, "unchanged")
-    else:
-        diff = "{0}\n{1}".format(
-            normalize_diff(first_dict, key, "deleted"),
-            normalize_diff(second_dict, key, "added"),
-        )
+def extract_keys(first_dict: dict, second_dict: dict) -> tuple:
+    """Extract keys from two given dicts into three sets.
+
+    Parameters:
+        first_dict: first given dictionary
+        second_dict: second given dictionary
+
+    Returns:
+        Three sets of keys:
+        intersected: keys that are in both dictionaries.
+        added: keys that are only in second_dict
+        removed: keys that are only in first_dict
+    """
+    intersected = first_dict.keys() & second_dict.keys()
+    added = second_dict.keys() - first_dict.keys()
+    removed = first_dict.keys() - second_dict.keys()
+    return (intersected, added, removed)
+
+
+def compare_keys(first, second) -> dict:
+    """Compare two given values."""
+    if first == second:
+        return validate_dict(STATUSES[2], first)
+
+    elif isinstance(first, Mapping) and isinstance(second, Mapping):
+        return validate_dict(STATUSES[3], collect_diffs(first, second))
+
+    return validate_dict(STATUSES[3], first, second)
+
+
+def collect_diffs(before: dict, after: dict) -> dict:  # noqa: WPS210
+    """Collect differences between two dicts."""
+    intersected, added, removed = extract_keys(before, after)
+    diff = {}
+
+    for added_key in added:
+        diff[added_key] = validate_dict(STATUSES[0], after[added_key])
+
+    for removed_key in removed:
+        diff[removed_key] = validate_dict(STATUSES[1], before[removed_key])
+
+    for key in intersected:
+        diff[key] = compare_keys(before[key], after[key])
 
     return diff
-
-
-def collect_diffs(first_dict: dict, second_dict: dict) -> list:
-    """Collect differences between two dicts into a list."""
-    keys = sorted(first_dict.keys() | second_dict.keys())
-    diff_list = ["{", "}"]
-
-    for key in keys:
-        diff = check_diff(key, first_dict, second_dict)
-        diff_list.insert(-1, diff)
-    return diff_list
 
 
 def generate_diff(first_file: str, second_file: str) -> str:
     """Generate difference between two given files.
 
     Parameters:
-        first_file: filepath to the first file
-        second_file: filepath to the second file
+        first_file: path to the first file
+        second_file: path to the second file
 
     Returns:
-          Difference between two files as a string.
+          Difference between two files.
     """
     data1 = read_data(first_file)
     data2 = read_data(second_file)
 
-    output = collect_diffs(data1, data2)
-
-    return "\n".join(output)
+    return collect_diffs(data1, data2)
