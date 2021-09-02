@@ -1,7 +1,7 @@
 """Command line interface methods."""
 import argparse
 
-from gendiff.utils.constants import FORMATS
+from gendiff.utils.constants import FORMAT_NAMES
 
 
 def set_arg_parser() -> argparse.Namespace:
@@ -19,8 +19,8 @@ def set_arg_parser() -> argparse.Namespace:
         "--format",
         metavar="FORMAT",
         help="set format of output from stylish, plain or json",
-        choices=FORMATS,
-        default=FORMATS[0],
+        choices=FORMAT_NAMES,
+        default=FORMAT_NAMES[0],
     )
 
     return parser.parse_args()

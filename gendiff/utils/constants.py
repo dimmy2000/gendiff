@@ -5,14 +5,12 @@ from types import MappingProxyType
 
 import yaml
 
-# Immutable dict
-SUPPORTED_EXTENSIONS = MappingProxyType(
-    {
-        ".json": json.load,
-        ".yaml": yaml.safe_load,
-        ".yml": yaml.safe_load,
-    },
+FORMAT_NAMES = (
+    "stylish",
 )
+
+DIFF_STATUS = "status"
+DIFF_VALUE = "value"
 
 STATUSES = MappingProxyType(
     OrderedDict(
@@ -25,6 +23,13 @@ STATUSES = MappingProxyType(
     ),
 )
 
-FORMATS = (
-    "stylish",
+STATUSES_LIST = list(STATUSES.keys())
+
+# MappingProxyType == immutable dict
+SUPPORTED_EXTENSIONS = MappingProxyType(
+    {
+        ".json": json.load,
+        ".yaml": yaml.safe_load,
+        ".yml": yaml.safe_load,
+    },
 )

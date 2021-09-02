@@ -1,18 +1,11 @@
 """Difference generator methods."""
+import json
 from collections.abc import Mapping
 
-from gendiff.utils.constants import STATUSES
+from gendiff.utils.constants import STATUSES_LIST
+from gendiff.utils.formatter import format_output
+from gendiff.utils.formatter import mutate_dict
 from gendiff.utils.loader import read_data
-
-STATUS = "status"
-STATUSES = list(STATUSES.keys())
-
-
-def validate_dict(status, old_value, new_value=None):
-    """Return a dictionary of a specific format."""
-    if new_value is None:
-        return {STATUS: status, "value": old_value}
-    return {STATUS: status, "value": old_value, "updated_value": new_value}
 
 
 def extract_keys(first_dict: dict, second_dict: dict) -> tuple:
@@ -24,45 +17,66 @@ def extract_keys(first_dict: dict, second_dict: dict) -> tuple:
 
     Returns:
         Three sets of keys:
-        intersected: keys that are in both dictionaries.
-        added: keys that are only in second_dict
-        removed: keys that are only in first_dict
+            intersected: keys that are in both dictionaries
+            added: keys that are only in second dictionary
+            removed: keys that are only in first dictionary
     """
     intersected = first_dict.keys() & second_dict.keys()
     added = second_dict.keys() - first_dict.keys()
     removed = first_dict.keys() - second_dict.keys()
+
     return (intersected, added, removed)
 
 
-def compare_keys(first, second) -> dict:
+def compare_values(first, second) -> dict:
     """Compare two given values."""
     if first == second:
-        return validate_dict(STATUSES[2], first)
+        return mutate_dict(STATUSES_LIST[2], json.dumps(first))
 
     elif isinstance(first, Mapping) and isinstance(second, Mapping):
-        return validate_dict(STATUSES[3], collect_diffs(first, second))
+        return mutate_dict(
+            STATUSES_LIST[2],
+            json.dumps(collect_diffs(first, second)),
+        )
+    return mutate_dict(STATUSES_LIST[3], json.dumps(first), json.dumps(second))
 
-    return validate_dict(STATUSES[3], first, second)
 
+def collect_diffs(before, after) -> dict:  # noqa: WPS210
+    """Create dictionary of differences between two given dicts.
 
-def collect_diffs(before: dict, after: dict) -> dict:  # noqa: WPS210
-    """Collect differences between two dicts."""
+    Parameters:
+        before: dictionary before changes take effect
+        after: dictionary after changes take effect
+
+    Returns:
+        Dictionary of collected differences between two given dictionaries.
+    """
     intersected, added, removed = extract_keys(before, after)
     diff = {}
 
     for added_key in added:
-        diff[added_key] = validate_dict(STATUSES[0], after[added_key])
+        diff[added_key] = mutate_dict(
+            STATUSES_LIST[0],
+            json.dumps(after[added_key]),
+        )
 
     for removed_key in removed:
-        diff[removed_key] = validate_dict(STATUSES[1], before[removed_key])
+        diff[removed_key] = mutate_dict(
+            STATUSES_LIST[1],
+            json.dumps(before[removed_key]),
+        )
 
     for key in intersected:
-        diff[key] = compare_keys(before[key], after[key])
+        diff[key] = compare_values(before[key], after[key])
 
     return diff
 
 
-def generate_diff(first_file: str, second_file: str) -> str:
+def generate_diff(
+    first_file: str,
+    second_file: str,
+    format_name: str = "stylish",
+) -> str:
     """Generate difference between two given files.
 
     Parameters:
@@ -75,4 +89,5 @@ def generate_diff(first_file: str, second_file: str) -> str:
     data1 = read_data(first_file)
     data2 = read_data(second_file)
 
-    return collect_diffs(data1, data2)
+    output = collect_diffs(data1, data2)
+    return format_output(output, format_name)

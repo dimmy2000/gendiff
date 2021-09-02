@@ -7,7 +7,10 @@ from gendiff.cli import set_arg_parser
 def main():
     """Run the application."""
     args = set_arg_parser()
-    diff = generate_diff(args.first_file, args.second_file)
+    diff = generate_diff(
+        args.first_file,
+        args.second_file,
+    )
     print(diff)
 
 
