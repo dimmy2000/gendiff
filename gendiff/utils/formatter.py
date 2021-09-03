@@ -26,59 +26,82 @@ def mutate_dict(
     }
 
 
-def jsonify_lines(indent, status, parent, child):
-    return "{0}{1} {2}: {3}".format(indent, status, parent, child)
+def jsonify_lines(indent, parent, child, nested_indent):
+    """docstring."""
+    line = "{0}{1} {2}: {3}"
+
+    if isinstance(child, Mapping):
+        status = child.get(DIFF_STATUS, "unchanged")
+        if child.get("status"):
+            if child["status"] == "updated":
+                return [
+                    line.format(
+                        indent,
+                        STATUSES["deleted"],
+                        parent,
+                        stylish(child[DIFF_VALUE], nested_indent),
+                    ),
+                    line.format(
+                        indent,
+                        STATUSES["added"],
+                        parent,
+                        stylish(child["updated_value"], nested_indent),
+                    ),
+                ]
+            return [
+                line.format(
+                    indent,
+                    STATUSES[status],
+                    parent,
+                    stylish(child[DIFF_VALUE], nested_indent),
+                ),
+            ]
+        return [
+            line.format(
+                indent,
+                STATUSES[status],
+                parent,
+                stylish(child, nested_indent),
+            ),
+        ]
+    return [
+        line.format(indent, " ", parent, stylish(child, nested_indent)),
+    ]
 
 
-def stylish(raw_input, depth=0) -> str:
+def stylish(raw_input, depth=0) -> str:  # noqa: WPS210
     """Return string formatted in stylish format.
 
     Parameters:
-        diff_dict: dictionary with generated differences
+        raw_input: dictionary with generated differences
 
     Returns:
         String formatted as a prettified JSON with indicated differences
     """
     if not isinstance(raw_input, Mapping):
-        if raw_input in {True, False, None}:
+        if not isinstance(raw_input, str):
             return json.dumps(raw_input)
-        return str(raw_input)
-    output = []
-    dict_items = sorted(raw_input.items())
+        return raw_input
+
+    formatted_lines = []
     spaces_count = 4
     replacer = " "
 
-    deep_spaces_count = depth + spaces_count
-    # 2 - status_indicator + replacer
-    deep_indent = replacer * (deep_spaces_count + - 2)
-    current_indent = replacer * depth
+    closing_bracket_indent = replacer * depth
+    depth += spaces_count
+    # magic number 2 is len(status_indicator) + len(replacer)
+    deep_indent = replacer * (depth - 2)
 
-    for parent, child in dict_items:
-        if isinstance(child, Mapping):
-            status = child.get(DIFF_STATUS, "unchanged")
-            if child.get("status"):
-                if child["status"] != "updated":
-                    lines = [
-                        jsonify_lines(deep_indent, STATUSES[status], parent, stylish(child["value"], deep_spaces_count)),
-                    ]
-                else:
-                    lines = [
-                        jsonify_lines(deep_indent, STATUSES["deleted"], parent, stylish(child["value"], deep_spaces_count)),
-                        jsonify_lines(deep_indent, STATUSES["added"], parent, stylish(child["updated_value"], deep_spaces_count)),
-                    ]
-            else:
-                lines = [
-                    jsonify_lines(deep_indent, STATUSES[status], parent, stylish(child, deep_spaces_count)),
-                ]
-            output.extend(lines)
-        else:
-            output.append(
-                jsonify_lines(deep_indent, " ", parent, stylish(child, deep_spaces_count)),
-            )
+    for parent, child in sorted(raw_input.items()):
+        formatted_lines.extend(
+            jsonify_lines(deep_indent, parent, child, depth),
+        )
 
-    output = chain("{", output, [current_indent + "}"])
+    formatted_lines = chain(
+        "{", formatted_lines, "{0}{1}".format(closing_bracket_indent, "}"),
+    )
 
-    return "\n".join(output)
+    return "\n".join(formatted_lines)
 
 
 FORMATTERS = MappingProxyType(
