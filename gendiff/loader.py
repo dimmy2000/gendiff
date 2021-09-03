@@ -2,8 +2,8 @@
 import os
 import sys
 
-from gendiff.utils.constants import SUPPORTED_EXTENSIONS
-from gendiff.utils.parser import get_extension
+from gendiff.constants import SUPPORTED_EXTENSIONS
+from gendiff.parser import get_extension
 
 
 def read_data(file_path: str) -> dict:

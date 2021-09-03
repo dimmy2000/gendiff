@@ -1,7 +1,7 @@
 """Command line interface methods."""
 import argparse
 
-from gendiff.utils.constants import FORMAT_NAMES
+from gendiff.constants import FORMAT_NAMES
 
 
 def set_arg_parser() -> argparse.Namespace:

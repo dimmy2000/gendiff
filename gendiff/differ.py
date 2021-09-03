@@ -2,10 +2,10 @@
 import json
 from collections.abc import Mapping
 
-from gendiff.utils.constants import STATUSES_LIST
-from gendiff.utils.formatter import format_output
-from gendiff.utils.formatter import mutate_dict
-from gendiff.utils.loader import read_data
+from gendiff.constants import STATUSES_LIST
+from gendiff.formatters import format_output
+from gendiff.formatters import mutate_dict
+from gendiff.loader import read_data
 
 
 def extract_keys(first_dict: dict, second_dict: dict) -> tuple:

@@ -1,33 +1,15 @@
-"""Formatters for different data structures."""
+"""Stylish format methods."""
 import json
-from collections.abc import Mapping
 from itertools import chain
-from types import MappingProxyType
-from typing import Callable
+from typing import Mapping
 
-from gendiff.utils.constants import DIFF_STATUS
-from gendiff.utils.constants import DIFF_VALUE
-from gendiff.utils.constants import STATUSES
-
-
-def mutate_dict(
-    status: str,
-    old_value: str,
-    new_value: str = None,
-) -> dict:
-    """Return a dictionary of a specific format."""
-    if new_value is None:
-        return {DIFF_STATUS: status, DIFF_VALUE: json.loads(old_value)}
-
-    return {
-        DIFF_STATUS: status,
-        DIFF_VALUE: json.loads(old_value),
-        "updated_value": json.loads(new_value),
-    }
+from gendiff.constants import DIFF_STATUS
+from gendiff.constants import DIFF_VALUE
+from gendiff.constants import STATUSES
 
 
 def jsonify_lines(indent, parent, child, nested_indent):
-    """docstring."""
+    """Return list of JSON-formatted lines."""
     line = "{0}{1} {2}: {3}"
 
     if isinstance(child, Mapping):
@@ -102,15 +84,3 @@ def stylish(raw_input, depth=0) -> str:  # noqa: WPS210
     )
 
     return "\n".join(formatted_lines)
-
-
-FORMATTERS = MappingProxyType(
-    {
-        "stylish": stylish,
-    },
-)
-
-
-def format_output(raw_dict: dict, format_name: str) -> Callable[[dict], str]:
-    """Return data formatted with given formatter."""
-    return FORMATTERS[format_name](raw_dict)

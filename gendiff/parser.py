@@ -2,7 +2,7 @@
 import os
 import sys
 
-from gendiff.utils.constants import SUPPORTED_EXTENSIONS
+from gendiff.constants import SUPPORTED_EXTENSIONS
 
 
 def get_extension(file_path: str) -> str:
