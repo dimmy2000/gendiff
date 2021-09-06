@@ -80,7 +80,7 @@ def stylish(raw_input, depth=0) -> str:  # noqa: WPS210
         )
 
     formatted_lines = chain(
-        "{", formatted_lines, "{0}{1}".format(closing_bracket_indent, "}"),
+        "{", formatted_lines, [closing_bracket_indent + "}"],  # noqa: WPS336
     )
 
     return "\n".join(formatted_lines)
