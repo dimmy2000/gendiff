@@ -24,6 +24,9 @@ with open(os.path.join(fixtures_path, "expected_recursive.txt")) as f:
 with open(os.path.join(fixtures_path, "expected_help.txt"), "rb") as f:
     EXPECTED_HELP = f.read()
 
+with open(os.path.join(fixtures_path, "expected_plain.txt")) as f:
+    EXPECTED_PLAIN = f.read()
+
 
 def test_set_arg_parser():
     output = subprocess.run(["poetry", "run", "gendiff", "-h"], capture_output=True)
@@ -50,3 +53,13 @@ def test_recursive_files():
         output = subprocess.run(input_request, capture_output=True)
 
         assert output.stdout.decode("utf-8") == EXPECTED_RECURSIVE
+
+
+def test_plain_format():
+    file1 = os.path.join(flat_fixtures, fixtures[0][0])
+    file2 = os.path.join(flat_fixtures, fixtures[0][1])
+
+    input_request = shlex.split("poetry run gendiff --format plain {0} {1}".format(file1, file2))
+    output = subprocess.run(input_request, capture_output=True)
+
+    assert output.stdout.decode("utf-8") == EXPECTED_PLAIN
