@@ -56,8 +56,8 @@ def test_recursive_files():
 
 
 def test_plain_format():
-    file1 = os.path.join(flat_fixtures, fixtures[0][0])
-    file2 = os.path.join(flat_fixtures, fixtures[0][1])
+    file1 = os.path.join(recursive_fixtures, fixtures[0][0])
+    file2 = os.path.join(recursive_fixtures, fixtures[0][1])
 
     input_request = shlex.split("poetry run gendiff --format plain {0} {1}".format(file1, file2))
     output = subprocess.run(input_request, capture_output=True)
