@@ -5,11 +5,13 @@ from typing import Callable
 
 from gendiff.constants import DIFF_STATUS
 from gendiff.constants import DIFF_VALUE
+from gendiff.formatters.plain import plain
 from gendiff.formatters.stylish import stylish
 
 FORMATTERS = MappingProxyType(
     {
         "stylish": stylish,
+        "plain": plain,
     },
 )
 

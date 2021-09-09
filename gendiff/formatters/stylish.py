@@ -56,6 +56,7 @@ def stylish(raw_input, depth=0) -> str:  # noqa: WPS210
 
     Parameters:
         raw_input: dictionary with generated differences
+        depth: counter of recursive function calls
 
     Returns:
         String formatted as a prettified JSON with indicated differences
