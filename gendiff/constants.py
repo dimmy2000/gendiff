@@ -9,6 +9,7 @@ import yaml
 FORMAT_NAMES = (
     "stylish",
     "plain",
+    "json",
 )
 
 # Constants used by formatter plain.py
