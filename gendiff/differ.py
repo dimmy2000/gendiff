@@ -1,5 +1,6 @@
 """Difference generator methods."""
 import json
+from collections import OrderedDict
 from collections.abc import Mapping
 
 from gendiff.constants import STATUSES_LIST
@@ -69,7 +70,7 @@ def collect_diffs(before, after) -> dict:  # noqa: WPS210
     for key in intersected:
         diff[key] = compare_values(before[key], after[key])
 
-    return diff
+    return OrderedDict(sorted(diff.items()))
 
 
 def generate_diff(

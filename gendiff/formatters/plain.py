@@ -11,8 +11,8 @@ from gendiff.constants import LINE_REMOVED
 from gendiff.constants import LINE_UPDATED
 
 
-def validate_data(raw_input):
-    """Check if input value is plain formatted."""
+def plainify_value(raw_input):
+    """Return plain formatted value."""
     if not isinstance(raw_input, Mapping):
         if not isinstance(raw_input, str):
             return json.dumps(raw_input)
@@ -21,7 +21,7 @@ def validate_data(raw_input):
 
 
 def flatten_diff_dict(nested_dict, root_path=None, diff_dict=None):
-    """Return flattened dictionary of diffs."""
+    """Return flattened dictionary of diffs with root paths as a keys."""
     flattened_dict = {}
 
     for parent, child in nested_dict.items():
@@ -32,10 +32,10 @@ def flatten_diff_dict(nested_dict, root_path=None, diff_dict=None):
     return flattened_dict
 
 
-def check_if_diff(diff_data):
+def check_if_diff(diff_dict):
     """Check if input data is dictionary of differences."""
-    if isinstance(diff_data, Mapping):
-        if DIFF_STATUS in diff_data:
+    if isinstance(diff_dict, Mapping):
+        if DIFF_STATUS in diff_dict:
             return True
     return False
 
@@ -64,7 +64,7 @@ def format_line(root_path, diff_values_dict):
     status = diff_values_dict[DIFF_STATUS]
 
     if status == "added":
-        added_value = validate_data(diff_values_dict[DIFF_VALUE])
+        added_value = plainify_value(diff_values_dict[DIFF_VALUE])
         lines_list.append(
             LINE_ADDED.format(added_value),
         )
@@ -73,8 +73,8 @@ def format_line(root_path, diff_values_dict):
         lines_list.append(LINE_REMOVED)
 
     elif status == "updated":
-        old_value = validate_data(diff_values_dict[DIFF_VALUE])
-        new_value = validate_data(diff_values_dict[DIFF_NEW_VALUE])
+        old_value = plainify_value(diff_values_dict[DIFF_VALUE])
+        new_value = plainify_value(diff_values_dict[DIFF_NEW_VALUE])
         lines_list.append(
             LINE_UPDATED.format(
                 old_value,
@@ -99,7 +99,5 @@ def plain(raw_dict):
 
     for parent, child in flattened_dict.items():
         formatted_lines.append(format_line(parent, child))
-
-    formatted_lines.sort()
 
     return "\n".join(formatted_lines)

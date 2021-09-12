@@ -75,7 +75,7 @@ def stylish(raw_input, depth=0) -> str:  # noqa: WPS210
     # magic number 2 is len(status_indicator) + len(replacer)
     deep_indent = replacer * (depth - 2)
 
-    for parent, child in sorted(raw_input.items()):
+    for parent, child in raw_input.items():
         formatted_lines.extend(
             jsonify_lines(deep_indent, parent, child, depth),
         )
