@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import shlex
@@ -26,6 +27,9 @@ with open(os.path.join(fixtures_path, "expected_help.txt"), "rb") as f:
 
 with open(os.path.join(fixtures_path, "expected_plain.txt")) as f:
     EXPECTED_PLAIN = f.read()
+
+with open(os.path.join(fixtures_path, "expected_json.txt")) as f:
+    EXPECTED_JSON = f.read()
 
 
 def test_set_arg_parser():
@@ -63,3 +67,13 @@ def test_plain_format():
     output = subprocess.run(input_request, capture_output=True)
 
     assert output.stdout.decode("utf-8") == EXPECTED_PLAIN
+
+
+def test_json_format():
+    file1 = os.path.join(recursive_fixtures, fixtures[0][0])
+    file2 = os.path.join(recursive_fixtures, fixtures[0][1])
+
+    input_request = shlex.split("poetry run gendiff --format json {0} {1}".format(file1, file2))
+    output = subprocess.run(input_request, capture_output=True)
+
+    assert output.stdout.decode("utf-8") == EXPECTED_JSON
