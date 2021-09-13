@@ -16,15 +16,6 @@ Utility features:
 - Support for different input formats: yaml, json.
 - Generating a report in plain text, stylish and json format.
 
-Usage example:
-```Shell
-$ gendiff --format plain filepath1.json filepath.yml
-
-Setting "common.setting4" was added with value: False
-Setting "group1.baz" was updated. From 'bas' to 'bars'
-Setting "group2" was removed
-```
-
 ### Installation
 
 Run the following commands in the shell:
@@ -35,3 +26,25 @@ cd python-project-lvl2
 make build
 make package-install
 ```
+
+### Usage examples
+
+#### Flat files comparison
+
+[![Flat JSON files comparison](media/flat_json.gif)](https://asciinema.org/a/w8xKwGFoIuR0MM3y1jUKuQmkO)
+
+[![Flat YAML files comparison](media/flat_yaml.gif)](https://asciinema.org/a/6fXWs0A1aF7qJC3mvL4dtTzgr)
+
+#### Recursive files comparison
+
+[![Recursive JSON comparison](media/recursive_json.gif)](https://asciinema.org/a/BxetexiGGHmd7MXlhWeo0avfR)
+
+[![Recursive YAML comparison](media/recursive_yaml.gif)](https://asciinema.org/a/2Ii9fAsLjZIv87FPKBTmabI1W)
+
+#### Plain format output
+
+[![Plain format output](media/plain_output.gif)](https://asciinema.org/a/4iDJEi9NSQCosYC2EsQfO6QU4)
+
+#### JSON format output
+
+[![JSON format output](media/json_output.gif)](https://asciinema.org/a/6DEJ22a9YMxJdsNXLJdClm27I)
