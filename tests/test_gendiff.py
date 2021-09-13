@@ -15,7 +15,7 @@ fixtures = (
 flat_fixtures = os.path.join(fixtures_path, "flat")
 recursive_fixtures = os.path.join(fixtures_path, "recursive")
 
-with open(os.path.join(fixtures_path, "expected.txt")) as f:
+with open(os.path.join(fixtures_path, "expected_flat.txt")) as f:
     EXPECTED_FLAT = f.read()
 
 with open(os.path.join(fixtures_path, "expected_recursive.txt")) as f:
