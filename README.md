@@ -20,9 +20,9 @@ Utility features:
 
 Run the following commands in the shell:
 
-```Shell
-git clone https://github.com/dimmy2000/python-project-lvl2.git
-cd python-project-lvl2
+```ShellSession
+git clone https://github.com/dimmy2000/gendiff.git
+cd gendiff
 make build
 make package-install
 ```
